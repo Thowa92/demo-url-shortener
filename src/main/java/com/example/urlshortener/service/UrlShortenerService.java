@@ -13,4 +13,6 @@ public interface UrlShortenerService {
 
 	public String loadUrlLongByUrlShort(String string, String domain);
 
+	public boolean storeNewMapping(UrlMappingEntity mapping, String domain);
+
 }
