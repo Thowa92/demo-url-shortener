@@ -7,9 +7,12 @@
 </head>
 
 <body class="container">
+    <br>
     <h1>Url Mappings</h1>
-    <table id="mappingTable" class="table table-dark">
-        <thead>
+    
+    <br>
+    <table id="mappingTable" class="table">
+        <thead class="thead-dark">
             <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Url Short</th>
@@ -20,6 +23,8 @@
         <tbody id="mappingTableBody">
         </tbody>
     </table>
+    <button onclick="refreshMappings()" class="btn btn-primary">Refresh</button>
+
     <div id="warning" style="visibility: hidden;" class="alert alert-warning" role="alert"></div>
     <form id="addNewMappingForm">
         <div style="display: grid; grid-template-columns: 6em auto; row-gap: 10px;">
@@ -86,6 +91,15 @@
         const button = document.getElementById('storeNewMapping');
         button.addEventListener('click', function (event) { addNewMapping(event) })
 
+        function createLink( cell, url )
+        {
+            var a = document.createElement('a');
+            var linkText = document.createTextNode( url );
+            a.appendChild(linkText);
+            a.href = url;
+            cell.appendChild(a);
+        }
+
         async function refreshMappings() {
             const response = await fetch('http://localhost:8080/allmappings', { method: 'GET' });
             const data = await response.json();
@@ -98,9 +112,17 @@
             let i = 1;
             data.forEach(element => {
                 let row = newBody.insertRow();
+
+                // ID
                 row.insertCell(0).innerHTML = element.id;
-                row.insertCell(1).innerHTML = element.urlShort;
+                
+                // short url
+                createLink( row.insertCell(1), element.urlShort );
+                
+                // long url
                 row.insertCell(2).innerHTML = element.urlLong;
+
+                // counter
                 row.insertCell(3).innerHTML = element.counter;
                 i++;
             });
