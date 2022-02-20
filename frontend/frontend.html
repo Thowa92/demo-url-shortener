@@ -20,7 +20,7 @@
                 <th scope="col">Number of calls</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="mappingTableBody">
         </tbody>
     </table>
 
@@ -42,7 +42,7 @@
             xhr.onload = () => {
                 // print JSON response
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    location.reload();
+                    refreshMappings();
                 }
             };
 
@@ -63,25 +63,31 @@
         const form = document.getElementById( 'addNewMappingForm' );
         form.addEventListener( 'submit', function( event) { addNewMapping( event ) } )
 
-        async function loadMappings() {
+        async function refreshMappings() {
             const response = await fetch('http://localhost:8080/allmappings', { method: 'GET' });
             const data = await response.json();
+            
+            // create new table body
+            var newBody = document.createElement('tbody');
+            newBody.setAttribute('id','mappingTableBody');
 
-            let table = document.getElementById("mappingTable");
+            // fill data into new table body
             let i = 1;
-            console.log(response);
-            console.log(data);
             data.forEach(element => {
-                let row = table.insertRow(i);
+                let row = newBody.insertRow();
                 row.insertCell(0).innerHTML = element.id;
                 row.insertCell(1).innerHTML = element.urlShort;
                 row.insertCell(2).innerHTML = element.urlLong;
                 row.insertCell(3).innerHTML = element.counter;
                 i++;
             });
+
+            // replace old table body with new table body
+            var oldBody = document.getElementById( 'mappingTableBody' );
+            oldBody.parentNode.replaceChild(newBody, oldBody)
         }
 
-        loadMappings();
+        refreshMappings();
     </script>
 
 </body>
