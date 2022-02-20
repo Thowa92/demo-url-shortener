@@ -47,8 +47,6 @@ public class UrlShortenerController {
 	 */
 	@GetMapping("/{urlShortExtension}")
 	ResponseEntity<Object> redirect(@PathVariable String urlShortExtension) {
-		// TODO get Domain without constant?
-		// TODO only return URL and let the frontend handle the redirect
 		URI uri = URI.create(urlShortenerService.loadUrlLongByUrlShort(DOMAIN + urlShortExtension, DOMAIN, true));
 		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
 	}
