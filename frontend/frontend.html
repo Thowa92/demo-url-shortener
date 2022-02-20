@@ -44,10 +44,14 @@
                 if (xhr.status >= 200 && xhr.status < 300) {
                     refreshMappings();
                 }
+                else
+                {
+                    console.log( xhr.response );
+                }
             };
 
             // create a JSON object
-            var data = { urlShort: document.getElementById( 'urlShort' ).value,
+            var data = { urlShort: 'http://localhost:8080/' + document.getElementById( 'urlShort' ).value,
                 urlLong: document.getElementById( 'urlLong' ).value };
 
             // open request

@@ -62,7 +62,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		Optional<UrlMappingEntity> urlMappingByUrlShort = urlShortenerRepository
 				.findUrlMappingByUrlShort(mapping.getUrlShort());
 
-		if (urlMappingByUrlShort.isPresent() && isDomainCorrect(mapping, domain)) {
+		if (urlMappingByUrlShort.isPresent() || !isDomainCorrect(mapping, domain)) {
 			return false;
 		}
 		
