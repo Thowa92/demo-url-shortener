@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+
+
+    <h1>Url Mappings</h1>
+
+    <table id="mappingTable" class="table table-dark">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Url Short</th>
+                <th scope="col">Url Long</th>
+                <th scope="col">Number of calls</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <form action="/action_page.php" method="get" target="_blank">
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" name="fname"><br><br>
+        <label for="lname">Last name:</label>
+        <input type="text" id="lname" name="lname"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <p>Click on the submit button, and the input will be sent to a page on the server called "action_page.php".</p>
+
+    <tr>
+        <th scope="row">3</th>
+        <td>Larry</td>
+        <td>the Bird</td>
+        <td>@twitter</td>
+    </tr>
+
+    <script>
+        async function loadMappings()
+        {
+            const response = await fetch( 'http://localhost:8080/allmappings', { method: 'GET' } );
+            const data = await response.json();
+
+            let table = document.getElementById( "mappingTable" );
+            let i = 1;
+            console.log(response);
+            console.log(data);
+            data.forEach(element => {
+                let row = table.insertRow(i);
+                row.insertCell(0).innerHTML = element.id;
+                row.insertCell(1).innerHTML = element.urlShort;
+                row.insertCell(2).innerHTML = element.urlLong;
+                row.insertCell(3).innerHTML = element.counter;
+                i++;
+            });
+        }
+
+        loadMappings();
+    </script>
+
+</body>
+
+</html>
