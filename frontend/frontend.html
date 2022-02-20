@@ -24,30 +24,50 @@
         </tbody>
     </table>
 
-    <form action="/action_page.php" method="get" target="_blank">
-        <label for="fname">First name:</label>
-        <input type="text" id="fname" name="fname"><br><br>
-        <label for="lname">Last name:</label>
-        <input type="text" id="lname" name="lname"><br><br>
+    <form id="addNewMappingForm" action="http://localhost:8080/newmapping" method="post" target="_blank">
+        <label for="urlShort">Short Url: http://localhost:8080/</label>
+        <input type="text" id="urlShort" name="urlShort"><br><br>
+        <label for="urlLong">Long Url:</label>
+        <input type="text" id="urlLong" name="urlLong"><br><br>
         <input type="submit" value="Submit">
     </form>
 
-    <p>Click on the submit button, and the input will be sent to a page on the server called "action_page.php".</p>
-
-    <tr>
-        <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-    </tr>
-
     <script>
-        async function loadMappings()
-        {
-            const response = await fetch( 'http://localhost:8080/allmappings', { method: 'GET' } );
+        function addNewMapping( event ) {
+            event.preventDefault();
+
+            const xhr = new XMLHttpRequest();
+
+            // listen for `load` event
+            xhr.onload = () => {
+                // print JSON response
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    location.reload();
+                }
+            };
+
+            // create a JSON object
+            var data = { urlShort: document.getElementById( 'urlShort' ).value,
+                urlLong: document.getElementById( 'urlLong' ).value };
+
+            // open request
+            xhr.open('POST', 'http://localhost:8080/newmapping');
+
+            // set `Content-Type` header
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            // send rquest with JSON payload
+            xhr.send(JSON.stringify( data ));
+        }
+
+        const form = document.getElementById( 'addNewMappingForm' );
+        form.addEventListener( 'submit', function( event) { addNewMapping( event ) } )
+
+        async function loadMappings() {
+            const response = await fetch('http://localhost:8080/allmappings', { method: 'GET' });
             const data = await response.json();
 
-            let table = document.getElementById( "mappingTable" );
+            let table = document.getElementById("mappingTable");
             let i = 1;
             console.log(response);
             console.log(data);
