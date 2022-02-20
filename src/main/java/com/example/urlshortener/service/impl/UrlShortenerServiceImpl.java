@@ -33,7 +33,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 	}
 
 	/**
-	 * Tries to store the mapping.
+	 * Tries to store the mapping and generates the short url, if not specified.
 	 * 
 	 * @return boolean true, if successful. false, if mapping existed 
 	 */
@@ -43,9 +43,10 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		// generate short url, if not specified by user
 		if( !isShortUrlSpecified(mapping, domain) )
 		{
-			mapping.setUrlShort( domain + generateRandomString( 10 ) );
+			mapping.setUrlShort( generateUniqueShortUrl(domain) );
 		}
 		
+		// check uniqueness
 		Optional<UrlMappingEntity> urlMappingByUrlShort = urlShortenerRepository
 				.findUrlMappingByUrlShort(mapping.getUrlShort());
 
@@ -57,16 +58,55 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		return true;
 	}
 
+	/**
+	 * Generates a unique short urls with 10 characters after the domain.
+	 * This method generates new urls, until one new url was generated. 
+	 * 
+	 * @param domain
+	 * @return
+	 */
+	private String generateUniqueShortUrl(String domain) {
+		String generatedShortUrl = "";
+		boolean newShortUrlGenerated = false;
+		while( !newShortUrlGenerated )
+		{
+			generatedShortUrl = domain + generateRandomString( 10 );
+			newShortUrlGenerated = urlShortenerRepository.findUrlMappingByUrlShort(generatedShortUrl).isEmpty();
+		}
+		return generatedShortUrl;
+	}
+
+	/**
+	 * Check if short Url was set by the user.
+	 * No, empty or only domain count as not specified.
+	 * 
+	 * @param mapping
+	 * @param domain
+	 * @return
+	 */
 	private boolean isShortUrlSpecified(UrlMappingEntity mapping, String domain) {
 		return mapping.getUrlShort() != null 
 				&& !mapping.getUrlShort().isBlank() 
 				&& !mapping.getUrlShort().trim().toLowerCase().equals( domain.toLowerCase() );
 	}
 
+	/**
+	 * Checks, if the short url starts with the correct domain.
+	 * 
+	 * @param mapping
+	 * @param domain
+	 * @return
+	 */
 	private boolean isDomainCorrect(UrlMappingEntity mapping, String domain) {
 		return mapping.getUrlShort().toLowerCase().startsWith(domain.toLowerCase());
 	}
 
+	/**
+	 * Generates a random string of length 10 (https://www.baeldung.com/java-random-string).
+	 * 
+	 * @param length
+	 * @return
+	 */
 	private String generateRandomString( int length ) {
 	    int leftLimit = 48; // numeral '0'
 	    int rightLimit = 122; // letter 'z'
