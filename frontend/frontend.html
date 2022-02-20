@@ -21,32 +21,37 @@
         </tbody>
     </table>
     <div id="warning" style="visibility: hidden;" class="alert alert-warning" role="alert"></div>
-    <form id="addNewMappingForm" action="http://localhost:8080/newmapping" method="post" target="_blank">
-        <label for="urlShort">Short Url: </label>
-        <label for="urlShort" style="color:gray;">http://localhost:8080/</label>
-        <input type="text" id="urlShort" name="urlShort"><br><br>
-
-        <label for="urlLong">Long Url:</label>
-        <input type="text" id="urlLong" name="urlLong"><br><br>
-        <input type="submit" value="Submit">
-    </div>
+    <form id="addNewMappingForm">
+        <div style="display: grid; grid-template-columns: 6em auto; row-gap: 10px;">
+            
+            <label for="urlShort">Short Url: </label>
+            <div>
+                <label for="urlShort" style="color:gray;">http://localhost:8080/</label>
+                <input type="text" id="urlShort" name="urlShort">
+            </div>
+            
+            <label for="urlLong">Long Url:</label>
+            <input type="text" id="urlLong" name="urlLong">
+        </div>
+        <br>
+        <button id="storeNewMapping" class="btn btn-primary" type="button">Store new mapping</button>
+        </div>
     </form>
 
     <script>
-        function showWarning( text ) {
-            var warning = document.getElementById( 'warning' );
+        function showWarning(text) {
+            var warning = document.getElementById('warning');
             warning.style.visibility = "visible";
             warning.innerHTML = text;
         }
 
-        function hideWarning( text ) {
-            var warning = document.getElementById( 'warning' );
+        function hideWarning(text) {
+            var warning = document.getElementById('warning');
             warning.style.visibility = "hidden";
             warning.innerHTML = '';
         }
 
         function addNewMapping(event) {
-            event.preventDefault();
             hideWarning();
 
             const xhr = new XMLHttpRequest();
@@ -78,8 +83,8 @@
             xhr.send(JSON.stringify(data));
         }
 
-        const form = document.getElementById('addNewMappingForm');
-        form.addEventListener('submit', function (event) { addNewMapping(event) })
+        const button = document.getElementById('storeNewMapping');
+        button.addEventListener('click', function (event) { addNewMapping(event) })
 
         async function refreshMappings() {
             const response = await fetch('http://localhost:8080/allmappings', { method: 'GET' });
