@@ -25,10 +25,22 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 	/**
 	 * Maps the short url to the long url or the domain, if the short url does not
 	 * exist.
+	 * 
+	 * Increments the Counter.
 	 */
 	@Override
-	public String loadUrlLongByUrlShort(String urlShort, String domain) {
+	public String loadUrlLongByUrlShort(String urlShort, String domain, boolean incrementCounter) {
 		Optional<UrlMappingEntity> urlMapping = urlShortenerRepository.findUrlMappingByUrlShort(urlShort);
+		
+		if ( incrementCounter )
+		{
+			// increment, if mapping exists
+			urlMapping.ifPresent( mapping -> { 
+				mapping.setCounter( mapping.getCounter() + 1 );
+				urlShortenerRepository.save( mapping ); 
+				});
+		}
+		
 		return urlMapping.map(mapping -> mapping.getUrlLong()).orElse(domain);
 	}
 
