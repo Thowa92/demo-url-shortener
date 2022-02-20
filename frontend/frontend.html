@@ -6,9 +6,7 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
-<body>
-
-
+<body class="container">
     <h1>Url Mappings</h1>
     <table id="mappingTable" class="table table-dark">
         <thead>
@@ -24,11 +22,14 @@
     </table>
     <div id="warning" style="visibility: hidden;" class="alert alert-warning" role="alert"></div>
     <form id="addNewMappingForm" action="http://localhost:8080/newmapping" method="post" target="_blank">
-        <label for="urlShort">Short Url: http://localhost:8080/</label>
+        <label for="urlShort">Short Url: </label>
+        <label for="urlShort" style="color:gray;">http://localhost:8080/</label>
         <input type="text" id="urlShort" name="urlShort"><br><br>
+
         <label for="urlLong">Long Url:</label>
         <input type="text" id="urlLong" name="urlLong"><br><br>
         <input type="submit" value="Submit">
+    </div>
     </form>
 
     <script>
