@@ -31,7 +31,7 @@
             
             <label for="urlShort">Short Url: </label>
             <div>
-                <label for="urlShort" style="color:gray;">http://localhost:8080/</label>
+                <label id="domainLabel" for="urlShort" style="color:gray;"></label>
                 <input type="text" id="urlShort" name="urlShort">
             </div>
             
@@ -44,6 +44,10 @@
     </form>
 
     <script>
+        const apiDomain = 'http://localhost:8080/';
+
+        document.getElementById( 'domainLabel' ).innerHTML=apiDomain;
+
         function showWarning(text) {
             var warning = document.getElementById('warning');
             warning.style.visibility = "visible";
@@ -79,7 +83,7 @@
             };
 
             // open request
-            xhr.open('POST', 'http://localhost:8080/newmapping');
+            xhr.open('POST', apiDomain + 'newmapping');
 
             // set `Content-Type` header
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -101,7 +105,7 @@
         }
 
         async function refreshMappings() {
-            const response = await fetch('http://localhost:8080/allmappings', { method: 'GET' });
+            const response = await fetch( apiDomain + 'allmappings', { method: 'GET' });
             const data = await response.json();
 
             // create new table body
@@ -117,7 +121,7 @@
                 row.insertCell(0).innerHTML = element.id;
                 
                 // short url
-                createLink( row.insertCell(1), 'http://localhost:8080/' + element.urlShort );
+                createLink( row.insertCell(1), apiDomain + element.urlShort );
                 
                 // long url
                 row.insertCell(2).innerHTML = element.urlLong;
