@@ -23,114 +23,92 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 	}
 
 	/**
-	 * Maps the short url to the long url or the domain, if the short url does not
-	 * exist.
-	 * 
+	 * Maps the short URL to the long URL.
 	 * Increments the Counter.
 	 */
 	@Override
-	public String loadUrlLongByUrlShort(String urlShort, String domain, boolean incrementCounter) {
+	public Optional<UrlMappingEntity> loadMappingByUrlShort(String urlShort, boolean incrementCounter) {
 		Optional<UrlMappingEntity> urlMapping = urlShortenerRepository.findUrlMappingByUrlShort(urlShort);
-		
-		if ( incrementCounter )
-		{
+
+		if (incrementCounter) {
 			// increment, if mapping exists
-			urlMapping.ifPresent( mapping -> { 
-				mapping.setCounter( mapping.getCounter() + 1 );
-				urlShortenerRepository.save( mapping ); 
-				});
+			urlMapping.ifPresent(mapping -> {
+				mapping.setCounter(mapping.getCounter() + 1);
+				urlShortenerRepository.save(mapping);
+			});
 		}
-		
-		return urlMapping.map(mapping -> mapping.getUrlLong()).orElse(domain);
+
+		return urlMapping;
 	}
 
 	/**
-	 * Tries to store the mapping and generates the short url, if not specified.
+	 * Tries to store the mapping and generates the short URL, if not specified.
 	 * 
-	 * @return boolean true, if successful. false, if mapping existed 
+	 * @return boolean true, if successful. false, if mapping existed
 	 */
 	@Override
-	public boolean storeNewMapping(UrlMappingEntity mapping, String domain) {
-		
-		// generate short url, if not specified by user
-		if( !isShortUrlSpecified(mapping, domain) )
-		{
-			mapping.setUrlShort( generateUniqueShortUrl(domain) );
+	public boolean storeNewMapping(UrlMappingEntity mapping) {
+
+		// generate short URL, if not specified by user
+		if (!isShortUrlSpecified(mapping)) {
+			mapping.setUrlShort(generateUniqueShortUrl());
 		}
-		
+
 		// check uniqueness
 		Optional<UrlMappingEntity> urlMappingByUrlShort = urlShortenerRepository
 				.findUrlMappingByUrlShort(mapping.getUrlShort());
 
-		if (urlMappingByUrlShort.isPresent() || !isDomainCorrect(mapping, domain)) {
+		if (urlMappingByUrlShort.isPresent()) {
 			return false;
 		}
-		
-		urlShortenerRepository.save( mapping );
+
+		urlShortenerRepository.save(mapping);
 		return true;
 	}
 
 	/**
-	 * Generates a unique short urls with 10 characters after the domain.
-	 * This method generates new urls, until one new url was generated. 
+	 * Generates a unique short URLs with 10 characters. This
+	 * method generates URLs, until one new URL was generated.
 	 * 
-	 * @param domain
 	 * @return
 	 */
-	private String generateUniqueShortUrl(String domain) {
+	private String generateUniqueShortUrl() {
 		String generatedShortUrl = "";
 		boolean newShortUrlGenerated = false;
-		while( !newShortUrlGenerated )
-		{
-			generatedShortUrl = domain + generateRandomString( 10 );
+		while (!newShortUrlGenerated) {
+			generatedShortUrl = generateRandomString(10);
 			newShortUrlGenerated = urlShortenerRepository.findUrlMappingByUrlShort(generatedShortUrl).isEmpty();
 		}
 		return generatedShortUrl;
 	}
 
 	/**
-	 * Check if short Url was set by the user.
-	 * No, empty or only domain count as not specified.
+	 * Check if short URL was set by the user (non null and non empty).
 	 * 
 	 * @param mapping
-	 * @param domain
 	 * @return
 	 */
-	private boolean isShortUrlSpecified(UrlMappingEntity mapping, String domain) {
-		return mapping.getUrlShort() != null 
-				&& !mapping.getUrlShort().isBlank() 
-				&& !mapping.getUrlShort().trim().toLowerCase().equals( domain.toLowerCase() );
+	private boolean isShortUrlSpecified(UrlMappingEntity mapping) {
+		return mapping.getUrlShort() != null && !mapping.getUrlShort().isBlank();
 	}
 
 	/**
-	 * Checks, if the short url starts with the correct domain.
-	 * 
-	 * @param mapping
-	 * @param domain
-	 * @return
-	 */
-	private boolean isDomainCorrect(UrlMappingEntity mapping, String domain) {
-		return mapping.getUrlShort().toLowerCase().startsWith(domain.toLowerCase());
-	}
-
-	/**
-	 * Generates a random string of length 10 (https://www.baeldung.com/java-random-string).
+	 * Generates a random string of length 10
+	 * (https://www.baeldung.com/java-random-string).
 	 * 
 	 * @param length
 	 * @return
 	 */
-	private String generateRandomString( int length ) {
-	    int leftLimit = 48; // numeral '0'
-	    int rightLimit = 122; // letter 'z'
-	    Random random = new Random();
+	private String generateRandomString(int length) {
+		int leftLimit = 48; // numeral '0'
+		int rightLimit = 122; // letter 'z'
+		Random random = new Random();
 
-	    String generatedString = random.ints(leftLimit, rightLimit + 1)
-	      .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-	      .limit( length )
-	      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-	      .toString();
+		String generatedString = random.ints(leftLimit, rightLimit + 1)
+				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(length)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 
-	    return generatedString;
+		return generatedString;
 	}
 
 }

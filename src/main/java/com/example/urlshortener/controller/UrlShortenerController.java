@@ -2,6 +2,7 @@ package com.example.urlshortener.controller;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,6 @@ import com.example.urlshortener.service.UrlShortenerService;
 @RestController
 public class UrlShortenerController {
 
-	private static final String DOMAIN = "http://localhost:8080/";
-
 	@Autowired
 	UrlShortenerService urlShortenerService;
 
@@ -40,15 +39,20 @@ public class UrlShortenerController {
 	}
 
 	/**
-	 * Redirects the call.
+	 * Tries to redirect the call.
 	 * 
 	 * @param urlShortExtension
 	 * @return
 	 */
 	@GetMapping("/{urlShortExtension}")
 	ResponseEntity<Object> redirect(@PathVariable String urlShortExtension) {
-		URI uri = URI.create(urlShortenerService.loadUrlLongByUrlShort(DOMAIN + urlShortExtension, DOMAIN, true));
-		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
+		Optional<UrlMappingEntity> urlMappingEntity = urlShortenerService.loadMappingByUrlShort(urlShortExtension,
+				true);
+
+		return urlMappingEntity.map(
+				mapping -> ResponseEntity.status(HttpStatus.FOUND).location(URI.create(mapping.getUrlLong())).build())
+				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("Was not able to redirect. Url mapping does not exist."));
 	}
 
 	/**
@@ -60,7 +64,7 @@ public class UrlShortenerController {
 	@CrossOrigin
 	@PostMapping("/newmapping")
 	ResponseEntity<String> storeNewMapping(@RequestBody UrlMappingEntity mapping) {
-		if ( urlShortenerService.storeNewMapping(mapping, DOMAIN) ) {
+		if (urlShortenerService.storeNewMapping(mapping)) {
 			return new ResponseEntity<String>(HttpStatus.ACCEPTED);
 		}
 

@@ -74,7 +74,7 @@
 
             // create a JSON object
             var data = {
-                urlShort: 'http://localhost:8080/' + document.getElementById('urlShort').value,
+                urlShort: document.getElementById('urlShort').value,
                 urlLong: document.getElementById('urlLong').value
             };
 
@@ -117,7 +117,7 @@
                 row.insertCell(0).innerHTML = element.id;
                 
                 // short url
-                createLink( row.insertCell(1), element.urlShort );
+                createLink( row.insertCell(1), 'http://localhost:8080/' + element.urlShort );
                 
                 // long url
                 row.insertCell(2).innerHTML = element.urlLong;
