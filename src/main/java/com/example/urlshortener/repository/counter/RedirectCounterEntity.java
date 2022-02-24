@@ -1,4 +1,4 @@
-package com.example.urlshortener.repository;
+package com.example.urlshortener.repository.counter;
 
 import java.util.Date;
 
@@ -11,8 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.example.urlshortener.repository.urlmapping.UrlMappingEntity;
+
 /**
  * Tracks the redirects including a timestamp to analyze the traffic.
+ * Multiple entries can belong to one {@link com.example.urlshortener.repository.urlmapping.UrlMappingEntity}.
  * 
  * @author Thomas
  *

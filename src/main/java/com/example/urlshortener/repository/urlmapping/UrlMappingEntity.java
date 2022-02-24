@@ -1,4 +1,4 @@
-package com.example.urlshortener.repository;
+package com.example.urlshortener.repository.urlmapping;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -7,8 +7,8 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.urlshortener.repository.UrlMappingEntity;
-import com.example.urlshortener.repository.UrlShortenerRepository;
+import com.example.urlshortener.repository.urlmapping.UrlMappingEntity;
+import com.example.urlshortener.repository.urlmapping.UrlShortenerRepository;
 import com.example.urlshortener.service.UrlShortenerService;
 
 @Service
