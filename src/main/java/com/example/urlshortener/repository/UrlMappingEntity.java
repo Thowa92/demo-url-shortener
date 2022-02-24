@@ -43,7 +43,7 @@ public class UrlMappingEntity {
 	
 	@Override
 	public String toString() {
-		return "urlShort: " + urlShort + " urlLong: " + urlLong + " id: " + id + " counter: " + counter;
+		return "ID: " + id + " urlShort: " + urlShort + " urlLong: " + urlLong + " id: " + id + " counter: " + counter;
 	}
 
 	public String getUrlShort() {

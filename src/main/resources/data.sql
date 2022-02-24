@@ -7,3 +7,13 @@ VALUES ( 'h2', 'https://www.baeldung.com/spring-boot-h2-database', 0 );
 
 INSERT INTO URL_MAPPINGS ( url_short, url_long, counter ) 
 VALUES ( 'howtojava', 'https://howtodoinjava.com/spring-boot/command-line-runner-interface-example/', 0 );
+
+
+INSERT INTO URL_MAPPINGS_REDIRECT_COUNTER ( URL_MAPPING_ID, COUNTER, REDIRECT_DATE )
+VALUES ( 1, 2, current_timestamp-1 );
+
+INSERT INTO URL_MAPPINGS_REDIRECT_COUNTER ( URL_MAPPING_ID, COUNTER, REDIRECT_DATE )
+VALUES ( 1, 4, current_timestamp );
+
+INSERT INTO URL_MAPPINGS_REDIRECT_COUNTER ( URL_MAPPING_ID, COUNTER, REDIRECT_DATE )
+VALUES ( 3, 4, current_timestamp-5 );
