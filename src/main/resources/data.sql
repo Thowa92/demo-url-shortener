@@ -10,10 +10,10 @@ VALUES ( 'howtojava', 'https://howtodoinjava.com/spring-boot/command-line-runner
 
 
 INSERT INTO URL_MAPPINGS_REDIRECT_COUNTER ( URL_MAPPING_ID, COUNTER, REDIRECT_DATE )
-VALUES ( 1, 2, current_timestamp-1 );
+VALUES ( 1, 2, DATE_TRUNC('MINUTE', current_timestamp-1 ) );
 
 INSERT INTO URL_MAPPINGS_REDIRECT_COUNTER ( URL_MAPPING_ID, COUNTER, REDIRECT_DATE )
-VALUES ( 1, 4, current_timestamp );
+VALUES ( 1, 4, DATE_TRUNC('MINUTE', current_timestamp ) );
 
 INSERT INTO URL_MAPPINGS_REDIRECT_COUNTER ( URL_MAPPING_ID, COUNTER, REDIRECT_DATE )
-VALUES ( 3, 4, current_timestamp-5 );
+VALUES ( 3, 4, DATE_TRUNC('MINUTE', current_timestamp-5 ) );

@@ -1,12 +1,16 @@
 package com.example.urlshortener.service.impl;
 
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.urlshortener.repository.counter.RedirectCounterEntity;
+import com.example.urlshortener.repository.counter.RedirectCounterRepository;
 import com.example.urlshortener.repository.urlmapping.UrlMappingEntity;
 import com.example.urlshortener.repository.urlmapping.UrlShortenerRepository;
 import com.example.urlshortener.service.UrlShortenerService;
@@ -16,6 +20,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
 	@Autowired
 	UrlShortenerRepository urlShortenerRepository;
+	
+	@Autowired
+	RedirectCounterRepository redirectCounterRepository;
 
 	@Override
 	public Collection<UrlMappingEntity> loadAllMappings() {
@@ -24,7 +31,8 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
 	/**
 	 * Maps the short URL to the long URL.
-	 * Increments the Counter.
+	 * Increments the Counter in the mapping table.
+	 * Stores the counter in the counter table.
 	 */
 	@Override
 	public Optional<UrlMappingEntity> loadMappingByUrlShort(String urlShort, boolean incrementCounter) {
@@ -33,12 +41,47 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 		if (incrementCounter) {
 			// increment, if mapping exists
 			urlMapping.ifPresent(mapping -> {
-				mapping.setCounter(mapping.getCounter() + 1);
-				urlShortenerRepository.save(mapping);
+				incrementMapping(mapping);
+				incrementCounter(mapping);
 			});
 		}
 
 		return urlMapping;
+	}
+
+	/**
+	 * Increments the counter in the counter table or creates a new entry.
+	 * 
+	 * The time is stored without seconds and milliseconds, such that at most one entry per minute exists.
+	 * 
+	 * @param mapping
+	 * @return
+	 */
+	private RedirectCounterEntity incrementCounter(UrlMappingEntity mapping) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		Date dateToTheMinute = calendar.getTime();
+
+		Optional<RedirectCounterEntity> redirectCounterEntity = redirectCounterRepository
+				.findByUrlMappingIdAndRedirectDate(mapping.getId(), dateToTheMinute);
+
+		RedirectCounterEntity incrementedRedirectEntity = redirectCounterEntity.map(entity -> {
+			entity.setCounter(entity.getCounter() + 1);
+			return entity;
+		}).orElse(new RedirectCounterEntity(mapping, 1, dateToTheMinute));
+
+		return redirectCounterRepository.save(incrementedRedirectEntity);
+	}
+
+	/**
+	 * Increments the counter in the mapping table.
+	 * 
+	 * @param mapping
+	 */
+	private void incrementMapping(UrlMappingEntity mapping) {
+		mapping.setCounter(mapping.getCounter() + 1);
+		urlShortenerRepository.save(mapping);
 	}
 
 	/**
